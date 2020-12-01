@@ -1,5 +1,6 @@
 import json
-import bitmex
+import time
+import ccxt
 import requests
 import datetime
 from bitmex_websocket import BitMEXWebsocket
@@ -13,38 +14,39 @@ index.get_weighting()
 index_weighting_interval = 7200
 
 # Initialize Database
-db = Database()
-db.migrate_init()
-session = db.create_session()
+# db = Database()
+# db.migrate_init()
+# session = db.create_session()
 
 # Initialize Websocket
 bitmex_api_key = 'dmhw7WzhowGv-azLLUilvrj2'
 bitmex_api_secret = 'GHxloPld3Al36gFbjDvPuOVd_1NoKrZU-UA8Y_vI-GgUuaUh'
 
-ws = BitMEXWebsocket(
-    endpoint="https://www.bitmex.com/api/v1",
-    symbol="XBTUSD",
-    api_key=bitmex_api_key,
-    api_secret=bitmex_api_secret
-)
-
-ws.get_instrument()
+api = ccxt.bitmex()
+api.apiKey = bitmex_api_key
+api.secret = bitmex_api_secret
 
 # Run forever
 counter = 0
 old_tick = ''
-while ws.ws.sock.connected:
-    tick = ws.get_ticker()
+while True:
+    start = time.time()
+    tick = api.fetch_ticker(symbol='BTC/USD')
     if counter == index_weighting_interval:
         counter = 0
         index.get_weighting()
 
-    if old_tick != tick:
+    if old_tick != tick['bid']:
         now = datetime.datetime.now()
         index.get_index_value()
-        row = BTX(time=str(now), btx_etf_price=str(tick['last']), btx_idx_price=str(index.index_value))
-        session.add(row)
-        session.commit()
-        print(str(now) + ' - Kurs: ' + str(tick['last']), ' - Index: ' + str(index.index_value), ' - Diff: ', str(tick['last'] - index.index_value))
-        old_tick = tick
+        row = BTX(time=str(now), btx_etf_price=str(tick['bid']), btx_idx_price=str(index.index_value))
+        # session.add(row)
+        # session.commit()
+        print(str(now) + ' - Buy-Kurs: ' + str(tick['ask']) + ' Sell-Kurs: ' + str(tick['bid']), ' - Index: ' + str(index.index_value), ' - Diff: ', str(tick['last'] - index.index_value))
+        old_tick = tick['bid']
         counter += 1
+    sleep_time = 1.1 - (time.time() - start)
+    if sleep_time < 0:
+        continue
+    else:
+        time.sleep(sleep_time)

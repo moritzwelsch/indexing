@@ -1,6 +1,5 @@
 import sys
 import json
-import ccxt
 import requests
 import threading
 import pandas as pd
