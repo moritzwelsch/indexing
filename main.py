@@ -14,9 +14,9 @@ index.get_weighting()
 index_weighting_interval = 7200
 
 # Initialize Database
-# db = Database()
-# db.migrate_init()
-# session = db.create_session()
+db = Database()
+db.migrate_init()
+session = db.create_session()
 
 # Initialize Websocket
 bitmex_api_key = 'dmhw7WzhowGv-azLLUilvrj2'
@@ -40,8 +40,8 @@ while True:
         now = datetime.datetime.now()
         index.get_index_value()
         row = BTX(time=str(now), btx_etf_price=str(tick['bid']), btx_idx_price=str(index.index_value))
-        # session.add(row)
-        # session.commit()
+        session.add(row)
+        session.commit()
         print(str(now) + ' - Buy-Kurs: ' + str(tick['ask']) + ' Sell-Kurs: ' + str(tick['bid']), ' - Index: ' + str(index.index_value), ' - Diff: ', str(tick['last'] - index.index_value))
         old_tick = tick['bid']
         counter += 1
