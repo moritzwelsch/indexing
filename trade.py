@@ -75,7 +75,7 @@ for index, row in df.iterrows():
 
             elif direction == 'SELL' and row.ETF_PRICE >= entry_price + stop_loss:
                 fee = (position_size / entry_price) * fees
-                profit = abs((((1 / row.ETF_PRICE - 1 / entry_price) * position_size) * row.ETF_PRICE)) - fee
+                profit = (((1 / row.ETF_PRICE - 1 / entry_price) * position_size) * row.ETF_PRICE) - fee
                 money += profit
                 print(direction, '-', money, '- SL HIT -', entry_price, row.ETF_PRICE, profit, fee)
                 open_positions.remove(position)
