@@ -7,12 +7,12 @@ from src.Connector import Database
 
 # Trading initialize parameters
 money = 1000
-leverage = 10           # Float Value. So 1.2 means 20% Leverage
+leverage = 1           # Float Value. So 1.2 means 20% Leverage
 position_size = money * leverage
 fees = (0.075 / 100) * 2
-diff_signal = 150
-take_profit = 100
-stop_loss = 50
+diff_signal = 30
+take_profit = 20
+stop_loss = 10
 spread = 0.5
 max_concurrent_positions = 1
 open_positions = []
