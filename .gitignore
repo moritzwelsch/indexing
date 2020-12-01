@@ -1,2 +1,4 @@
 venv/
 venv_mac/
+.idea/
+src/dbf/
