@@ -19,8 +19,8 @@ db.migrate_init()
 session = db.create_session()
 
 # Initialize Websocket
-bitmex_api_key = 'dmhw7WzhowGv-azLLUilvrj2'
-bitmex_api_secret = 'GHxloPld3Al36gFbjDvPuOVd_1NoKrZU-UA8Y_vI-GgUuaUh'
+bitmex_api_key = '7hpAgbRkeTMYp0tN6CyrSSiJ'
+bitmex_api_secret = '6kqQuRrY9UHUtl-_BxTRmxMkTM6DKqRQ5H41PURRPafI8ASO'
 
 api = ccxt.bitmex()
 api.apiKey = bitmex_api_key
