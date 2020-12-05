@@ -49,7 +49,7 @@ while True:
         print(str(now) + ' - Buy-Kurs: ' + str(tick[0][0]['askPrice']) + ' Sell-Kurs: ' + str(tick[0][0]['bidPrice']), ' - Index: ' + str(index.index_value), ' - Diff: ', str(tick[0][0]['bidPrice'] - index.index_value))
         old_tick = tick[0][0]['bidPrice']
         counter += 1
-    sleep_time = 2.0 - (time.time() - start)
+    sleep_time = 1.1 - (time.time() - start)
     if sleep_time < 0:
         continue
     else:
