@@ -11,8 +11,9 @@ leverage = 1           # Float Value. So 1.2 means 20% Leverage
 position_size = money * leverage
 fees = (0.075 / 100) * 2
 diff_signal = 30
-take_profit = 20
-stop_loss = 10
+take_profit = 15
+stop_loss = 5
+# Opti setup 30 15 5
 spread = 0.5
 max_concurrent_positions = 1
 open_positions = []
