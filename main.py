@@ -4,6 +4,7 @@ import ccxt
 import requests
 import datetime
 import bitmex
+import bravado
 from src.Connector import Database
 from src.Models import BTX
 from src.index_calculator import Index
@@ -29,11 +30,16 @@ counter = 0
 old_tick = ''
 while True:
     start = time.time()
-    tick = result = api.Quote.Quote_get(symbol="XBTUSD", reverse=True, count=1).result()
+    try:
+        tick = api.Quote.Quote_get(symbol="XBTUSD", reverse=True, count=1).result()
+        print(datetime.datetime.now(), tick[1].headers['x-ratelimit-limit'], tick[1].headers['x-ratelimit-remaining'], datetime.datetime.fromtimestamp(int(tick[1].headers['x-ratelimit-reset'])).strftime('%Y-%m-%d %H:%M:%S'))
+    except bravado.exception.HTTPTooManyRequests:
+        print("TooManyRequests")
+        time.sleep(5)
+        continue
     if counter == index_weighting_interval:
         counter = 0
         index.get_weighting()
-
     if old_tick != tick[0][0]['bidPrice']:
         now = datetime.datetime.now()
         index.get_index_value()
@@ -43,7 +49,7 @@ while True:
         print(str(now) + ' - Buy-Kurs: ' + str(tick[0][0]['askPrice']) + ' Sell-Kurs: ' + str(tick[0][0]['bidPrice']), ' - Index: ' + str(index.index_value), ' - Diff: ', str(tick[0][0]['bidPrice'] - index.index_value))
         old_tick = tick[0][0]['bidPrice']
         counter += 1
-    sleep_time = 1.1 - (time.time() - start)
+    sleep_time = 2.0 - (time.time() - start)
     if sleep_time < 0:
         continue
     else:
