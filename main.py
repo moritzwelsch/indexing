@@ -5,8 +5,14 @@ import requests
 import datetime
 import bitmex
 import bravado
+from src import index_calculator
 from src.Connector import Database
 from src.Models import BTX
+
+# Init Index
+index = index_calculator.Index()
+index.get_weighting()
+index_renew = 86400
 
 # Initialize Database
 db = Database()
@@ -45,13 +51,16 @@ while True:
         continue
     if old_tick != tick[0][0]['bidPrice']:
         now = datetime.datetime.now()
-        index_value = get_index_value()
-        row = BTX(time=str(now), btx_etf_price=str(tick[0][0]['bidPrice']), btx_idx_price=str(index_value))
+        index.get_index_value()
+        row = BTX(time=str(now), btx_etf_price=str(tick[0][0]['bidPrice']), btx_idx_price=str(index.index_value))
         session.add(row)
         session.commit()
-        print(str(now) + ' - Buy-Kurs: ' + str(tick[0][0]['askPrice']) + ' Sell-Kurs: ' + str(tick[0][0]['bidPrice']), ' - Index: ' + str(index_value), ' - Diff: ', str(tick[0][0]['bidPrice'] - index_value))
+        print(str(now) + ' - Buy-Kurs: ' + str(tick[0][0]['askPrice']) + ' Sell-Kurs: ' + str(tick[0][0]['bidPrice']), ' - Index: ' + str(index.index_value), ' - Diff: ', str(tick[0][0]['bidPrice'] - index.index_value))
         old_tick = tick[0][0]['bidPrice']
         counter += 1
+    if counter >= index_renew:
+        index.get_weighting()
+        counter = 0
     sleep_time = 1.3 - (time.time() - start)
     if sleep_time < 0:
         continue
