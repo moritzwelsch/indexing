@@ -43,9 +43,6 @@ while True:
         print("TooManyRequests")
         time.sleep(5)
         continue
-    if counter == index_weighting_interval:
-        counter = 0
-        index.get_weighting()
     if old_tick != tick[0][0]['bidPrice']:
         now = datetime.datetime.now()
         index_value = get_index_value()
