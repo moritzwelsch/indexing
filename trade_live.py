@@ -66,7 +66,7 @@ def close_pos(position):
         return False
 
 
-old_tick = ''
+old_tick = '1'
 while True:
     session = db.create_session()
     tick = session.query(BTX).order_by(BTX.id.desc()).first()
