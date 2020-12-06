@@ -26,7 +26,7 @@ api = bitmex.bitmex(test=False, api_key=bitmex_api_key, api_secret=bitmex_api_se
 # Initialize Database
 db = Database()
 db.migrate_init()
-session = db.create_session()
+
 
 # Setup trading session.
 api.Position.Position_updateLeverage(symbol=symbol, leverage=leverage)
@@ -68,6 +68,7 @@ def close_pos(position):
 
 old_tick = ''
 while True:
+    session = db.create_session()
     tick = session.query(BTX).order_by(BTX.id.desc()).first()
     tick.btx_etf_price = float(tick.btx_etf_price)
     tick.btx_idx_price = float(tick.btx_idx_price)
@@ -93,4 +94,5 @@ while True:
             while not close_pos(position):
                 pass
     old_tick = tick
+    session.close()
 
