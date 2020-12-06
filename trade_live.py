@@ -73,10 +73,6 @@ while True:
     tick.btx_etf_price = float(tick.btx_etf_price)
     tick.btx_idx_price = float(tick.btx_idx_price)
     diff = tick.btx_etf_price - tick.btx_idx_price
-    try:
-        print(tick.__dict__, old_tick.__dict__)
-    except AttributeError:
-        pass
     if tick != old_tick:
         print(tick.__dict__, diff)
         if len(open_positions) < max_concurrent_positions:
