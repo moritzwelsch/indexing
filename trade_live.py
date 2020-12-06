@@ -89,6 +89,6 @@ while True:
            (tick.btx_idx_price <= position.open_price - stop_loss or tick.btx_etf_price >= position.open_price + take_profit):
             while not close_pos(position):
                 pass
-    old_tick = tick.btx_etf_price
+    old_tick = tick.btx_etf_price + 0
     session.close()
 
