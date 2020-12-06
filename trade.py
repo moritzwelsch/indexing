@@ -40,10 +40,10 @@ df['DIFF'] = df.apply(lambda row: row.ETF_PRICE - row.IDX_PRICE, axis=1)
 for index, row in df.iterrows():
     if len(open_positions) < max_concurrent_positions:
         if row.DIFF > diff_signal:
-            # print("SELL", index, row.DIFF, row.ETF_PRICE, row.IDX_PRICE)
+            print("SELL", index, row.DIFF, row.ETF_PRICE, row.IDX_PRICE)
             open_positions.append('SELL_' + str(row.ETF_PRICE - 0.5))
         elif row.DIFF < -diff_signal:
-            # print("BUY", index, row.DIFF, row.ETF_PRICE, row.IDX_PRICE)
+            print("BUY", index, row.DIFF, row.ETF_PRICE, row.IDX_PRICE)
             open_positions.append('BUY_' + str(row.ETF_PRICE + 0.5))
     else:
         for position in open_positions:
@@ -54,7 +54,7 @@ for index, row in df.iterrows():
                 fee = (position_size / entry_price) * fees
                 profit = (((1/entry_price - 1/row.ETF_PRICE) * position_size) * row.ETF_PRICE) - fee
                 money += profit
-                print(direction, '-', money, '- TP HIT -', entry_price, row.ETF_PRICE, profit, fee)
+                print(row.index, direction, '-', money, '- TP HIT -', entry_price, row.ETF_PRICE, profit, fee)
                 open_positions.remove(position)
                 continue
 
@@ -62,7 +62,7 @@ for index, row in df.iterrows():
                 fee = (position_size / entry_price) * fees
                 profit = abs((((1/row.ETF_PRICE - 1/entry_price) * position_size) * row.ETF_PRICE)) - fee
                 money += profit
-                print(direction, '-', money, '- TP HIT -', entry_price, row.ETF_PRICE, profit, fee)
+                print(row.index, direction, '-', money, '- TP HIT -', entry_price, row.ETF_PRICE, profit, fee)
                 open_positions.remove(position)
                 continue
 
@@ -70,7 +70,7 @@ for index, row in df.iterrows():
                 fee = (position_size / entry_price) * fees
                 profit = (((1 / entry_price - 1 / row.ETF_PRICE) * position_size) * row.ETF_PRICE) - fee
                 money += profit
-                print(direction, '-', money, '- SL HIT -', entry_price, row.ETF_PRICE, profit, fee)
+                print(row.index, direction, '-', money, '- SL HIT -', entry_price, row.ETF_PRICE, profit, fee)
                 open_positions.remove(position)
                 continue
 
@@ -78,6 +78,6 @@ for index, row in df.iterrows():
                 fee = (position_size / entry_price) * fees
                 profit = (((1 / row.ETF_PRICE - 1 / entry_price) * position_size) * row.ETF_PRICE) - fee
                 money += profit
-                print(direction, '-', money, '- SL HIT -', entry_price, row.ETF_PRICE, profit, fee)
+                print(row.index, direction, '-', money, '- SL HIT -', entry_price, row.ETF_PRICE, profit, fee)
                 open_positions.remove(position)
                 continue
