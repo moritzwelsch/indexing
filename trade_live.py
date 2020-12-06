@@ -26,7 +26,6 @@ api = bitmex.bitmex(test=False, api_key=bitmex_api_key, api_secret=bitmex_api_se
 # Initialize Database
 db = Database()
 db.migrate_init()
-session = db.create_session()
 
 # Setup trading session.
 api.Position.Position_updateLeverage(symbol=symbol, leverage=leverage)
@@ -66,20 +65,20 @@ def close_pos(position):
         return False
 
 
-old_tick = []
+old_tick = ''
 while True:
+    session = db.create_session()
     tick = session.query(BTX).order_by(BTX.id.desc()).first()
     tick.btx_etf_price = float(tick.btx_etf_price)
     tick.btx_idx_price = float(tick.btx_idx_price)
     diff = tick.btx_etf_price - tick.btx_idx_price
-    if tick.btx_etf_price not in old_tick:
+    if tick != old_tick:
         print(tick.__dict__, diff)
         if len(open_positions) < max_concurrent_positions:
             if diff > diff_signal:
                 open_positions.append(open_pos('Sell', tick.id))
             elif diff < -diff_signal:
                 open_positions.append(open_pos('Buy', tick.id))
-        old_tick.remove(tick.btx_etf_price)
     for position in open_positions:
         if position.direction == 'Sell' and \
            (tick.btx_idx_price >= position.open_price + stop_loss or tick.btx_etf_price <= position.open_price - take_profit):
@@ -89,5 +88,5 @@ while True:
            (tick.btx_idx_price <= position.open_price - stop_loss or tick.btx_etf_price >= position.open_price + take_profit):
             while not close_pos(position):
                 pass
-    old_tick.append(tick.btx_etf_price)
+    old_tick = tick
 
