@@ -34,6 +34,10 @@ api.Position.Position_updateLeverage(symbol=symbol, leverage=leverage)
 
 def open_pos(direction, tick_id):
     # Open Pos: Order.Order_new(symbol=symbol, ordType=ordType, side=direction, orderQty=orderQty).result()
+    if direction == 'Sell':
+        orderQty = -orderQty
+    else:
+        orderQty = orderQty
     result = api.Order.Order_new(symbol=symbol, ordType=ordType, side=direction, orderQty=orderQty).result()
     if result['ordStatus'] == 'Filled':
         pos = Position(open_time=result['timestamp'], close_time='', symbol=result['symbol'], qty=result['orderQty'],
@@ -73,11 +77,11 @@ while True:
             elif DIFF < -diff_signal:
                 open_positions.append(open_pos('Buy', tick.id))
     for position in open_positions:
-        if position.direction == 'Buy' and \
+        if position.direction == 'Sell' and \
            (tick.ETF_PRICE >= position.open_price + stop_loss or tick.ETF_PRICE <= position.open_price - take_profit):
             while not close_pos(position):
                 pass
-        if position.direction == 'Sell' and \
+        if position.direction == 'Buy' and \
            (tick.ETF_PRICE <= position.open_price - stop_loss or tick.ETF_PRICE >= position.open_price + take_profit):
             while not close_pos(position):
                 pass
