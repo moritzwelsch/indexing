@@ -69,7 +69,7 @@ def close_pos(position):
 old_tick = ''
 while True:
     tick = session.query(BTX).order_by(BTX.id.desc()).first()
-    diff = tick.ETF_PRICE - tick.IDX_PRICE
+    diff = tick.btx_etf_price - tick.btx_idx_price
     if tick != old_tick:
         if len(open_positions) < max_concurrent_positions:
             if diff > diff_signal:
@@ -78,11 +78,11 @@ while True:
                 open_positions.append(open_pos('Buy', tick.id))
     for position in open_positions:
         if position.direction == 'Sell' and \
-           (tick.ETF_PRICE >= position.open_price + stop_loss or tick.ETF_PRICE <= position.open_price - take_profit):
+           (tick.btx_idx_price >= position.open_price + stop_loss or tick.btx_etf_price <= position.open_price - take_profit):
             while not close_pos(position):
                 pass
         if position.direction == 'Buy' and \
-           (tick.ETF_PRICE <= position.open_price - stop_loss or tick.ETF_PRICE >= position.open_price + take_profit):
+           (tick.btx_idx_price <= position.open_price - stop_loss or tick.btx_etf_price >= position.open_price + take_profit):
             while not close_pos(position):
                 pass
 
