@@ -1,5 +1,6 @@
 import sys
 import time
+import bitmex
 import datetime
 from src.Models import BTX
 from src.Models import Position
