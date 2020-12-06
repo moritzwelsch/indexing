@@ -73,7 +73,7 @@ while True:
     tick.btx_idx_price = float(tick.btx_idx_price)
     diff = tick.btx_etf_price - tick.btx_idx_price
     if tick != old_tick:
-        print(tick.__dict__)
+        print(tick.__dict__, diff)
         if len(open_positions) < max_concurrent_positions:
             if diff > diff_signal:
                 open_positions.append(open_pos('Sell', tick.id))
