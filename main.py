@@ -7,12 +7,6 @@ import bitmex
 import bravado
 from src.Connector import Database
 from src.Models import BTX
-from src.index_calculator import Index
-
-# Initialize Index
-index = Index()
-index.get_weighting()
-index_weighting_interval = 14400
 
 # Initialize Database
 db = Database()
@@ -22,8 +16,20 @@ session = db.create_session()
 # Initialize Websocket
 bitmex_api_key = 'WaD4DpadS8c5oUiCFx5VwbNv'
 bitmex_api_secret = 'LK_qSAqt3wpZ1BDmH9y00Pi62q3tTblCrlkRd2cq8MlUqjlQ'
-
 api = bitmex.bitmex(test=False, api_key=bitmex_api_key, api_secret=bitmex_api_secret)
+
+
+def get_index_value():
+    indexes = api.Instrument.Instrument_getCompositeIndex(symbol=".BXBT", reverse=True, count=6).result()
+    idx_value = 0
+    for index in indexes[0]:
+        print(index)
+        if not index['weight']:
+            idx_value += index['lastPrice'] * 0
+        else:
+            idx_value += index['lastPrice'] * index['weight']
+    return idx_value
+
 
 # Run forever
 counter = 0
@@ -42,14 +48,14 @@ while True:
         index.get_weighting()
     if old_tick != tick[0][0]['bidPrice']:
         now = datetime.datetime.now()
-        index.get_index_value()
-        row = BTX(time=str(now), btx_etf_price=str(tick[0][0]['bidPrice']), btx_idx_price=str(index.index_value))
+        index_value = get_index_value()
+        row = BTX(time=str(now), btx_etf_price=str(tick[0][0]['bidPrice']), btx_idx_price=str(index_value))
         session.add(row)
         session.commit()
-        print(str(now) + ' - Buy-Kurs: ' + str(tick[0][0]['askPrice']) + ' Sell-Kurs: ' + str(tick[0][0]['bidPrice']), ' - Index: ' + str(index.index_value), ' - Diff: ', str(tick[0][0]['bidPrice'] - index.index_value))
+        print(str(now) + ' - Buy-Kurs: ' + str(tick[0][0]['askPrice']) + ' Sell-Kurs: ' + str(tick[0][0]['bidPrice']), ' - Index: ' + str(index_value), ' - Diff: ', str(tick[0][0]['bidPrice'] - index_value))
         old_tick = tick[0][0]['bidPrice']
         counter += 1
-    sleep_time = 1.1 - (time.time() - start)
+    sleep_time = 1.3 - (time.time() - start)
     if sleep_time < 0:
         continue
     else:
