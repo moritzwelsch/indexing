@@ -69,8 +69,6 @@ def close_pos(position):
 old_tick = ''
 while True:
     tick = session.query(BTX).order_by(BTX.id.desc()).first()
-    print(tick)
-    exit()
     diff = tick.ETF_PRICE - resultIDX_PRICE
     if tick != old_tick:
         if len(open_positions) < max_concurrent_positions:
