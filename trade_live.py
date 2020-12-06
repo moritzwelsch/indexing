@@ -9,8 +9,7 @@ from src.Connector import Database
 symbol = 'XBTUSD'
 ordType = 'Market'
 orderQty = 30
-leverage = 10           # Float Value. So 1.2 means 20% Leverage
-position_size = money * leverage
+leverage = 10
 diff_signal = 30
 take_profit = 15
 stop_loss = 5
