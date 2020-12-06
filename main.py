@@ -23,7 +23,7 @@ def get_index_value():
     indexes = api.Instrument.Instrument_getCompositeIndex(symbol=".BXBT", reverse=True, count=6).result()
     idx_value = 0
     for index in indexes[0]:
-        print(index)
+        # print(index)
         if not index['weight']:
             idx_value += index['lastPrice'] * 0
         else:

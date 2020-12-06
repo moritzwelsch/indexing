@@ -21,7 +21,6 @@ open_positions = []
 
 # Initialize Database
 db = Database()
-db.migrate_init()
 session = db.create_session()
 
 rows = []
@@ -45,39 +44,3 @@ for index, row in df.iterrows():
         elif row.DIFF < -diff_signal:
             # print("BUY", index, row.DIFF, row.ETF_PRICE, row.IDX_PRICE)
             open_positions.append('BUY_' + str(row.ETF_PRICE + 0.5))
-    else:
-        for position in open_positions:
-            direction = position.split('_')[0]
-            entry_price = float(position.split('_')[1])
-            profit = 0
-            if direction == 'BUY' and row.ETF_PRICE >= entry_price + take_profit:
-                fee = (position_size / entry_price) * fees
-                profit = (((1/entry_price - 1/row.ETF_PRICE) * position_size) * row.ETF_PRICE) - fee
-                money += profit
-                print(direction, '-', money, '- TP HIT -', entry_price, row.ETF_PRICE, profit, fee)
-                open_positions.remove(position)
-                continue
-
-            elif direction == 'SELL' and row.ETF_PRICE <= entry_price - take_profit:
-                fee = (position_size / entry_price) * fees
-                profit = abs((((1/row.ETF_PRICE - 1/entry_price) * position_size) * row.ETF_PRICE)) - fee
-                money += profit
-                print(direction, '-', money, '- TP HIT -', entry_price, row.ETF_PRICE, profit, fee)
-                open_positions.remove(position)
-                continue
-
-            elif direction == 'BUY' and row.ETF_PRICE <= entry_price - stop_loss:
-                fee = (position_size / entry_price) * fees
-                profit = (((1 / entry_price - 1 / row.ETF_PRICE) * position_size) * row.ETF_PRICE) - fee
-                money += profit
-                print(direction, '-', money, '- SL HIT -', entry_price, row.ETF_PRICE, profit, fee)
-                open_positions.remove(position)
-                continue
-
-            elif direction == 'SELL' and row.ETF_PRICE >= entry_price + stop_loss:
-                fee = (position_size / entry_price) * fees
-                profit = (((1 / row.ETF_PRICE - 1 / entry_price) * position_size) * row.ETF_PRICE) - fee
-                money += profit
-                print(direction, '-', money, '- SL HIT -', entry_price, row.ETF_PRICE, profit, fee)
-                open_positions.remove(position)
-                continue
