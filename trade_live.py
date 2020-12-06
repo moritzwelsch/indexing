@@ -91,4 +91,5 @@ while True:
                 pass
     old_tick = tick.btx_etf_price + 0
     session.close()
+    time.sleep(0.01)
 
