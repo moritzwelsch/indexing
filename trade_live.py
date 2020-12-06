@@ -75,11 +75,11 @@ while True:
     for position in open_positions:
         if position.direction == 'Buy' and \
            (tick.ETF_PRICE >= position.open_price + stop_loss or tick.ETF_PRICE <= position.open_price - take_profit):
-            while not close_pos(po):
+            while not close_pos(position):
                 pass
         if position.direction == 'Sell' and \
            (tick.ETF_PRICE <= position.open_price - stop_loss or tick.ETF_PRICE >= position.open_price + take_profit):
-            while not close_pos(po):
+            while not close_pos(position):
                 pass
 
     old_tick = tick
