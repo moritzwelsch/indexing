@@ -76,7 +76,7 @@ while True:
         if len(open_positions) < max_concurrent_positions:
             if diff > diff_signal:
                 open_positions.append(open_pos('Sell', tick.id))
-            elif DIFF < -diff_signal:
+            elif diff < -diff_signal:
                 open_positions.append(open_pos('Buy', tick.id))
     for position in open_positions:
         if position.direction == 'Sell' and \
