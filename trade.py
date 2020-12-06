@@ -7,7 +7,7 @@ from src.Connector import Database
 
 # Trading initialize parameters
 money = 1000
-leverage = 1           # Float Value. So 1.2 means 20% Leverage
+leverage = 10           # Float Value. So 1.2 means 20% Leverage
 position_size = money * leverage
 fees = (0.075 / 100) * 2
 diff_signal = 30
@@ -17,6 +17,8 @@ stop_loss = 5
 spread = 0.5
 max_concurrent_positions = 1
 open_positions = []
+loss_cnt = 0
+win_cnt = 0
 
 
 # Initialize Database
@@ -51,6 +53,7 @@ for index, row in df.iterrows():
             entry_price = float(position.split('_')[1])
             profit = 0
             if direction == 'BUY' and row.ETF_PRICE >= entry_price + take_profit:
+                win_cnt += 1
                 fee = (position_size / entry_price) * fees
                 profit = (((1/entry_price - 1/row.ETF_PRICE) * position_size) * row.ETF_PRICE) - fee
                 money += profit
@@ -59,6 +62,7 @@ for index, row in df.iterrows():
                 continue
 
             elif direction == 'SELL' and row.ETF_PRICE <= entry_price - take_profit:
+                win_cnt += 1
                 fee = (position_size / entry_price) * fees
                 profit = abs((((1/row.ETF_PRICE - 1/entry_price) * position_size) * row.ETF_PRICE)) - fee
                 money += profit
@@ -67,6 +71,7 @@ for index, row in df.iterrows():
                 continue
 
             elif direction == 'BUY' and row.ETF_PRICE <= entry_price - stop_loss:
+                loss_cnt += 1
                 fee = (position_size / entry_price) * fees
                 profit = (((1 / entry_price - 1 / row.ETF_PRICE) * position_size) * row.ETF_PRICE) - fee
                 money += profit
@@ -75,9 +80,12 @@ for index, row in df.iterrows():
                 continue
 
             elif direction == 'SELL' and row.ETF_PRICE >= entry_price + stop_loss:
+                loss_cnt += 1
                 fee = (position_size / entry_price) * fees
                 profit = (((1 / row.ETF_PRICE - 1 / entry_price) * position_size) * row.ETF_PRICE) - fee
                 money += profit
                 print(index, direction, '-', money, '- SL HIT -', entry_price, row.ETF_PRICE, profit, fee)
                 open_positions.remove(position)
                 continue
+
+print("Losses:", loss_cnt, 'Wins:', win_cnt)
