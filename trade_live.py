@@ -82,11 +82,11 @@ while True:
                 open_positions.append(open_pos('Buy', tick.id, orderQty))
     for position in open_positions:
         if position.direction == 'Sell' and \
-           (tick.btx_idx_price >= position.entry_price + stop_loss or tick.btx_etf_price <= position.entry_price - take_profit):
+           (tick.btx_idx_price >= float(position.entry_price) + stop_loss or tick.btx_etf_price <= float(position.entry_price) - take_profit):
             while not close_pos(position):
                 pass
         if position.direction == 'Buy' and \
-           (tick.btx_idx_price <= position.entry_price - stop_loss or tick.btx_etf_price >= position.entry_price + take_profit):
+           (tick.btx_idx_price <= float(position.entry_price) - stop_loss or tick.btx_etf_price >= float(position.entry_price) + take_profit):
             while not close_pos(position):
                 pass
     old_tick = tick.btx_etf_price + 0
