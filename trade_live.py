@@ -32,12 +32,12 @@ db.migrate_init()
 api.Position.Position_updateLeverage(symbol=symbol, leverage=leverage)
 
 
-def open_pos(direction, tick_id):
+def open_pos(direction, tick_id, order_qty):
     # Open Pos: Order.Order_new(symbol=symbol, ordType=ordType, side=direction, orderQty=orderQty).result()
     if direction == 'Sell':
-        orderQty = -orderQty
+        orderQty = -order_qty
     else:
-        orderQty = orderQty
+        orderQty = order_qty
     result = api.Order.Order_new(symbol=symbol, ordType=ordType, side=direction, orderQty=orderQty).result()
     if result['ordStatus'] == 'Filled':
         pos = Position(open_time=result['timestamp'], close_time='', symbol=result['symbol'], qty=result['orderQty'],
@@ -74,12 +74,12 @@ while True:
     tick.btx_idx_price = float(tick.btx_idx_price)
     diff = tick.btx_etf_price - tick.btx_idx_price
     if tick.btx_etf_price != old_tick:
-        print(tick.__dict__, diff)
+        print(datetime.datetime.now(), tick.__dict__, diff)
         if len(open_positions) < max_concurrent_positions:
             if diff > diff_signal:
-                open_positions.append(open_pos('Sell', tick.id))
+                open_positions.append(open_pos('Sell', tick.id, orderQty))
             elif diff < -diff_signal:
-                open_positions.append(open_pos('Buy', tick.id))
+                open_positions.append(open_pos('Buy', tick.id, orderQty))
     for position in open_positions:
         if position.direction == 'Sell' and \
            (tick.btx_idx_price >= position.open_price + stop_loss or tick.btx_etf_price <= position.open_price - take_profit):
