@@ -46,7 +46,7 @@ def open_pos(direction, tick_id, order_qty):
         session.add(pos)
         session.commit()
         print("Opened Position:", pos.__dict__)
-        return position
+        return pos
     else:
         return
 
