@@ -38,7 +38,7 @@ def open_pos(direction, tick_id, order_qty):
         orderQty = -order_qty
     else:
         orderQty = order_qty
-    result = api.Order.Order_new(symbol=symbol, ordType=ordType, side=direction, orderQty=orderQty).result()
+    result = api.Order.Order_new(symbol=symbol, ordType=ordType, side=direction, orderQty=orderQty).result()[0]
     if result['ordStatus'] == 'Filled':
         pos = Position(open_time=result['timestamp'], close_time='', symbol=result['symbol'], qty=result['orderQty'],
                        tick_id=tick_id, entry_price=result['price'], close_price='0', direction=result['side'],
@@ -53,7 +53,7 @@ def open_pos(direction, tick_id, order_qty):
 
 def close_pos(position):
     # Close Pos: Order.Order_new(symbol='XBTUSD', ordType=ordType, execInst='Close').result()
-    result = api.Order.Order_new(symbol='XBTUSD', ordType=ordType, execInst='Close').result()
+    result = api.Order.Order_new(symbol='XBTUSD', ordType=ordType, execInst='Close').result()[0]
     if result['ordStatus'] == 'Filled':
         session.query(Position).filter(Position.id == position.id).update({'close_price': result['price'],
                                                                            'close_time': result['timestamp']})
