@@ -16,14 +16,14 @@ for pos in session.query(Position).all():
 	if pos.close_price and pos.close_price > 0:
 		if pos.direction == 'Buy':
 			fee = (position_size / pos.entry_price) * fees
-			print(pos.direction, pos.entry_price, pos.close_price, fee)
+			# print(pos.direction, pos.entry_price, pos.close_price, fee)
 			porift = profit = (((1/pos.entry_price - 1/pos.close_price) * position_size) * pos.close_price) - fee
-			print(pos.direction, pos.entry_price, pos.close_price, fee, profit)
+			print(pos.time, pos.direction, pos.entry_price, pos.close_price, fee, profit)
 		elif pos.direction == 'Sell':
 			fee = (position_size / pos.entry_price) * fees
-			print(pos.direction, pos.entry_price, pos.close_price, fee)
+			# print(pos.direction, pos.entry_price, pos.close_price, fee)
 			porift = profit = (((1/pos.close_price - 1/pos.entry_price) * position_size) * pos.close_price) - fee
-			print(pos.direction, pos.entry_price, pos.close_price, fee, profit)
+			print(pos.time, pos.direction, pos.entry_price, pos.close_price, fee, profit)
 		else:
 			profit = 0
 		money += porift
