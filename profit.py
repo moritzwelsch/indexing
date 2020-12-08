@@ -24,7 +24,8 @@ for pos in session.query(Position).all():
 			print(pos.direction, pos.entry_price, pos.close_price, fee)
 			porift = profit = (((1/pos.close_price - 1/pos.entry_price) * position_size) * pos.close_price) - fee
 			print(pos.direction, pos.entry_price, pos.close_price, fee, profit)
+		else:
+			profit = 0
+		money += porift
 
-
-
-
+print(money)
