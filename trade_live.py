@@ -89,7 +89,7 @@ while True:
            (float(tick.btx_etf_price) <= float(position.entry_price) - stop_loss or float(tick.btx_etf_price) >= float(position.entry_price) + take_profit):
             while not close_pos(position):
                 pass
-    old_tick = tick.btx_etf_price + 0
+    old_tick = float(tick.btx_etf_price) + 0
     session.close()
     time.sleep(0.01)
 
