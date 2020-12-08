@@ -10,9 +10,10 @@ position_size = float(money * leverage)
 fees = float((0.075 / 100) * 2)
 
 for pos in session.query(Position).all():
-	if pos.close_price:
-		pos.close_price = float(pos.close_price)
-		pos.entry_price = float(pos.entry_price)
+
+	pos.close_price = float(pos.close_price)
+	pos.entry_price = float(pos.entry_price)
+	if pos.close_price and pos.close_price > 0:
 		if pos.direction == 'Buy':
 			fee = (position_size / pos.entry_price) * fees
 			print(pos.direction, pos.entry_price, pos.close_price, fee)
