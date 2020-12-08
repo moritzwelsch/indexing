@@ -6,8 +6,8 @@ session = db.create_session()
 
 money = 30
 leverage = 10
-position_size = money * leverage
-fees = (0.075 / 100) * 2
+position_size = float(money * leverage)
+fees = float((0.075 / 100) * 2)
 
 for pos in session.query(Position).all():
 	if pos.close_price:
