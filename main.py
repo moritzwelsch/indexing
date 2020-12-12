@@ -95,7 +95,7 @@ while True:
     start = time.time()
     try:
         tick = api.Quote.Quote_get(symbol="XBTUSD", reverse=True, count=1).result()
-        print(datetime.datetime.now(), tick[1].headers['x-ratelimit-limit'], tick[1].headers['x-ratelimit-remaining'], datetime.datetime.fromtimestamp(int(tick[1].headers['x-ratelimit-reset'])).strftime('%Y-%m-%d %H:%M:%S'))
+        # print(datetime.datetime.now(), tick[1].headers['x-ratelimit-limit'], tick[1].headers['x-ratelimit-remaining'], datetime.datetime.fromtimestamp(int(tick[1].headers['x-ratelimit-reset'])).strftime('%Y-%m-%d %H:%M:%S'))
     except bravado.exception.HTTPTooManyRequests:
         print("TooManyRequests")
         time.sleep(5)
