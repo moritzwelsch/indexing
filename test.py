@@ -102,6 +102,13 @@ def get_signal(df):
         return
 
 
+def get_all_positions():
+    result = api.futures_get_all_orders(
+        symbol=symbol
+    )
+    return result
+
+
 def get_position_status(order_id):
     result = api.futures_get_order(
         symbol=symbol,
@@ -222,18 +229,20 @@ while True:
 
             if len(open_positions) >= max_position_count:
                 for position in open_positions:
+                    result = get_position_status(position.order_id)
+                    price = float(result['price'])
                     if position.direction == 'SELL' and \
-                            (float(data['a']) >= float(position.entry_price) + stop_loss or float(
-                                data['a']) <= float(position.entry_price) - take_profit):
-                        print(position.direction, data['a'], position.entry_price)
+                            (price >= float(position.entry_price) + stop_loss or price
+                             <= float(position.entry_price) - take_profit):
+                        print(position.direction, price, position.entry_price)
                         while not close_position(position):
                             pass
                         open_positions.remove(position)
                         continue
                     elif position.direction == 'BUY' and \
-                            (float(data['b']) <= float(position.entry_price) - stop_loss or float(
-                                data['b']) >= float(position.entry_price) + take_profit):
-                        print(position.direction, data['b'], position.entry_price)
+                            (price <= float(position.entry_price) - stop_loss or price
+                             >= float(position.entry_price) + take_profit):
+                        print(position.direction, price, position.entry_price)
                         while not close_position(position):
                             pass
                         open_positions.remove(position)
