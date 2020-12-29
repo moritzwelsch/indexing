@@ -184,8 +184,6 @@ def close_position(pos):
         print("Closed position:", pos.close_time, pos.close_price)
         return True
 
-print(get_position_status('11039857150'))
-sys.exit()
 
 profit = 0
 open_positions = []
