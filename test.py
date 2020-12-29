@@ -34,8 +34,8 @@ else:
 # Trading parameters
 symbol = 'BTCUSDT'
 qty = 0.02
-take_profit = 15
-stop_loss = 5
+take_profit = 60
+stop_loss = 20
 max_spread = 0.5
 max_position_count = 1
 min_change = 0.01
@@ -184,6 +184,8 @@ def close_position(pos):
         print("Closed position:", pos.close_time, pos.close_price)
         return True
 
+print(get_position_status('11039857150'))
+sys.exit()
 
 profit = 0
 open_positions = []
@@ -229,10 +231,10 @@ while True:
 
             if len(open_positions) >= max_position_count:
                 for position in open_positions:
-                    result = get_position_status(position.order_id)
-                    price = float(result['price'])
+                    bid_price = float(data['b'])
+                    ask_price = float(data['a'])
                     if position.direction == 'SELL' and \
-                            (price >= float(position.entry_price) + stop_loss or price
+                            (ask_price >= float(position.entry_price) + stop_loss or ask_price
                              <= float(position.entry_price) - take_profit):
                         print(position.direction, price, position.entry_price)
                         while not close_position(position):
@@ -240,7 +242,7 @@ while True:
                         open_positions.remove(position)
                         continue
                     elif position.direction == 'BUY' and \
-                            (price <= float(position.entry_price) - stop_loss or price
+                            (bid_price <= float(position.entry_price) - stop_loss or bid_price
                              >= float(position.entry_price) + take_profit):
                         print(position.direction, price, position.entry_price)
                         while not close_position(position):

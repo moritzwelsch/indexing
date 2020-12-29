@@ -1,7 +1,7 @@
 import sys
 import numpy
 import pandas as pd
-from src.Models import BTX
+from src.Models import BTX_BINANCE
 import matplotlib.pyplot as plt
 from src.Connector import Database
 
@@ -10,15 +10,15 @@ db = Database()
 db.migrate_init()
 session = db.create_session()
 
-all = session.query(BTX).all()
+all = session.query(BTX_BINANCE).all()
 
 rows = []
 for row in all:
     print(row.__dict__)
-    row_dict = {'TIME': row.time, 'ETF_PRICE': row.btx_etf_price, 'IDX_PRICE': row.btx_idx_price}
+    row_dict = {'TIME': row.time, 'BID': row.bid, 'ASK': row.ask, 'SPREAD': row.spread}
     rows.append(row_dict)
 
-
+sys.exit()
 # Create the x-axis data
 df = pd.DataFrame(rows)
 df['TIME'] = pd.to_datetime(df['TIME'], format='%Y-%m-%d %H:%M:%S.%f')
