@@ -211,6 +211,8 @@ while True:
                 continue
             # print('LENGTH', len(df))
             # Getting signal to execute
+            if not trading:
+                continue
             signal = get_signal(df)
             if signal and spread <= max_spread and len(open_positions) < max_position_count:
                 print(signal + '_' + data['b'])
@@ -223,6 +225,7 @@ while True:
                     if position.direction == 'SELL' and \
                             (float(data['a']) >= float(position.entry_price) + stop_loss or float(
                                 data['a']) <= float(position.entry_price) - take_profit):
+                        print(position.direction, data['a'], position.entry_price)
                         while not close_position(position):
                             pass
                         open_positions.remove(position)
@@ -230,6 +233,7 @@ while True:
                     elif position.direction == 'BUY' and \
                             (float(data['b']) <= float(position.entry_price) - stop_loss or float(
                                 data['b']) >= float(position.entry_price) + take_profit):
+                        print(position.direction, data['b'], position.entry_price)
                         while not close_position(position):
                             pass
                         open_positions.remove(position)
