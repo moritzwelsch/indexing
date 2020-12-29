@@ -198,7 +198,7 @@ while True:
             session.commit()
 
             # Check if oldest element in df is removable
-            if df.head(1).index.item() < pd.Timestamp(now) - datetime.timedelta(minutes=max_minutes + 0.1):
+            if df.head(1).index.item() < pd.Timestamp(now) - datetime.timedelta(minutes=max_minute + 0.1):
                 df.drop(df.head(1).index, inplace=True)
             elif df.head(1).index.item() < pd.Timestamp(now) - datetime.timedelta(minutes=max_minute):
                 pass
