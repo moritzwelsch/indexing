@@ -107,7 +107,7 @@ def get_position_status(order_id):
         symbol=symbol,
         orderId=order_id
     )
-    return result['status']
+    return result
 
 
 def open_position(side, tick_id):
@@ -126,16 +126,18 @@ def open_position(side, tick_id):
         quantity=qty
     )
     counter = 0
-    while get_position_status(result['orderId']) != 'FILLED':
-        time.sleep(0.1)
-        counter += 1
-        if counter >= 1000:
-            print("ERROR - Position could not be opened.")
-            return
-        continue
+    while result['status'] != 'FILLED':
+        result = get_position_status(result['orderId'])
+        if result['status'] != 'FILLED':
+            time.sleep(0.1)
+            counter += 1
+            if counter >= 1000:
+                print("ERROR - Position could not be opened.")
+                return
+            continue
     else:
-        pos = Position_Binance(open_time=result['updateTime'], close_time='', symbol=result['symbol'],
-                               qty=int(result['executedQty']), tick_id=tick_id, entry_price=float(result['price']),
+        pos = Position_Binance(open_time=result['time'], close_time='', symbol=result['symbol'],
+                               qty=float(result['executedQty']), tick_id=tick_id, entry_price=float(result['avgPrice']),
                                close_price='0', direction=result['side'], order_id=result['orderId'])
         session.add(pos)
         session.commit()
@@ -159,16 +161,18 @@ def close_position(pos):
         quantity=qty
     )
     counter = 0
-    while get_position_status(result['orderId']) != 'FILLED':
-        time.sleep(0.1)
-        counter += 1
-        if counter >= 1000:
-            print("ERROR - Position could not be closed.")
-            return False
-        continue
+    while result['status'] != 'FILLED':
+        result = get_position_status(result['orderId'])
+        if result['status'] != 'FILLED':
+            time.sleep(0.1)
+            counter += 1
+            if counter >= 1000:
+                print("ERROR - Position could not be opened.")
+                return
+            continue
     else:
-        session.query(Position_Binance).filter(Position_Binance.id == pos.id).update({'close_price': float(result['price']),
-                                                                           'close_time': result['updateTime']})
+        session.query(Position_Binance).filter(Position_Binance.id == pos.id).update({'close_price': float(result['avgPrice']),
+                                                                           'close_time': result['time']})
         session.commit()
         print("Closed position:", pos.close_time, pos.close_price)
         return True
