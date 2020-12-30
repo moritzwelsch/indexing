@@ -184,6 +184,7 @@ open_positions = []
 df = build_dataframe()
 old_data = {'price': 0}
 while True:
+    start = time.time()
     data = api.futures_symbol_ticker(symbol='BTCUSDT')
     if data and data['price'] != old_data['price']:
         now = str(datetime.datetime.now())
@@ -210,6 +211,11 @@ while True:
         # print('LENGTH', len(df))
         # Getting signal to execute
         if not trading:
+            sleep_time = 0.05 - (time.time() - start)
+            if sleep_time < 0:
+                continue
+            else:
+                time.sleep(sleep_time)
             continue
         signal = get_signal(df)
         if signal and spread <= max_spread and len(open_positions) < max_position_count:
@@ -239,3 +245,8 @@ while True:
                     open_positions.remove(position)
                     continue
 
+    sleep_time = 0.05 - (time.time() - start)
+    if sleep_time < 0:
+        continue
+    else:
+        time.sleep(sleep_time)
