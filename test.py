@@ -184,7 +184,7 @@ open_positions = []
 df = build_dataframe()
 old_data = {'a': 0, 'b': 0}
 while True:
-    data = client.futures_symbol_ticker(symbol='BTCUSDT')
+    data = api.futures_symbol_ticker(symbol='BTCUSDT')
     if data and data['price'] != old_data['price']:
         now = str(datetime.datetime.now())
         spread = float(data['price']) - float(data['price'])
