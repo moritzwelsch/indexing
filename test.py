@@ -182,7 +182,7 @@ def close_position(pos):
 profit = 0
 open_positions = []
 df = build_dataframe()
-old_data = {'a': 0, 'b': 0}
+old_data = {'price': 0}
 while True:
     data = api.futures_symbol_ticker(symbol='BTCUSDT')
     if data and data['price'] != old_data['price']:
