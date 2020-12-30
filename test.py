@@ -8,12 +8,6 @@ from binance.client import Client
 from src.Models import BTX_BINANCE
 from src.Connector import Database
 from src.Models import Position_Binance
-from unicorn_binance_websocket_api.unicorn_binance_websocket_api_manager import BinanceWebSocketApiManager
-
-
-# Setup websocket
-binance_websocket_api_manager = BinanceWebSocketApiManager(exchange="binance.com-futures")
-binance_websocket_api_manager.create_stream(['bookTicker'], ['btcusdt'])
 
 # Get input parameter
 if len(sys.argv) != 2:
@@ -190,61 +184,58 @@ open_positions = []
 df = build_dataframe()
 old_data = {'a': 0, 'b': 0}
 while True:
-    stream = binance_websocket_api_manager.pop_stream_data_from_stream_buffer()
-    if stream:
-        jsonstream = json.loads(stream)
-        data = jsonstream.get('data')
-        if data and data['a'] != old_data['a'] and data['b'] != old_data['b']:
-            now = str(datetime.datetime.now())
-            spread = float(data['a']) - float(data['b'])
-            # print(now, data['a'], data['b'], spread)
-            old_data = data
-            row = pd.DataFrame(data={'BID': float(data['b']), 'ASK': float(data['a']),
-                                     'SPREAD': spread}, index=[pd.Timestamp(now)])
-            df = df.append(row)
+    data = client.futures_symbol_ticker(symbol='BTCUSDT')
+    if data and data['price'] != old_data['price']:
+        now = str(datetime.datetime.now())
+        spread = float(data['price']) - float(data['price'])
+        # print(now, data['a'], data['b'], spread)
+        old_data = data
+        row = pd.DataFrame(data={'BID': float(data['price']), 'ASK': float(data['price']),
+                                 'SPREAD': spread}, index=[pd.Timestamp(now)])
+        df = df.append(row)
 
-            # Update database
-            row = BTX_BINANCE(time=now, bid=data['b'], ask=data['a'], spread=str(spread))
-            session.add(row)
-            session.commit()
+        # Update database
+        row = BTX_BINANCE(time=now, bid=data['price'], ask=data['price'], spread=str(spread))
+        session.add(row)
+        session.commit()
 
-            # Check if oldest element in df is removable
-            if df.head(1).index.item() < pd.Timestamp(now) - datetime.timedelta(minutes=max_minute + 0.1):
-                df.drop(df.head(1).index, inplace=True)
-            elif df.head(1).index.item() < pd.Timestamp(now) - datetime.timedelta(minutes=max_minute):
-                pass
-            else:
-                print("Waiting for cache to build...", len(df))
-                continue
-            # print('LENGTH', len(df))
-            # Getting signal to execute
-            if not trading:
-                continue
-            signal = get_signal(df)
-            if signal and spread <= max_spread and len(open_positions) < max_position_count:
-                print(signal + '_' + data['b'])
-                pos = open_position(signal, now)
-                if pos:
-                    open_positions.append(pos)
+        # Check if oldest element in df is removable
+        if df.head(1).index.item() < pd.Timestamp(now) - datetime.timedelta(minutes=max_minute + 0.1):
+            df.drop(df.head(1).index, inplace=True)
+        elif df.head(1).index.item() < pd.Timestamp(now) - datetime.timedelta(minutes=max_minute):
+            pass
+        else:
+            print("Waiting for cache to build...", len(df))
+            continue
+        # print('LENGTH', len(df))
+        # Getting signal to execute
+        if not trading:
+            continue
+        signal = get_signal(df)
+        if signal and spread <= max_spread and len(open_positions) < max_position_count:
+            print(signal + '_' + data['price'])
+            pos = open_position(signal, now)
+            if pos:
+                open_positions.append(pos)
 
-            if len(open_positions) >= max_position_count:
-                for position in open_positions:
-                    bid_price = float(data['b'])
-                    ask_price = float(data['a'])
-                    if position.direction == 'SELL' and \
-                            (ask_price >= float(position.entry_price) + stop_loss or ask_price
-                             <= float(position.entry_price) - take_profit):
-                        print(position.direction, price, position.entry_price)
-                        while not close_position(position):
-                            pass
-                        open_positions.remove(position)
-                        continue
-                    elif position.direction == 'BUY' and \
-                            (bid_price <= float(position.entry_price) - stop_loss or bid_price
-                             >= float(position.entry_price) + take_profit):
-                        print(position.direction, price, position.entry_price)
-                        while not close_position(position):
-                            pass
-                        open_positions.remove(position)
-                        continue
+        if len(open_positions) >= max_position_count:
+            for position in open_positions:
+                bid_price = float(data['price'])
+                ask_price = float(data['price'])
+                if position.direction == 'SELL' and \
+                        (ask_price >= float(position.entry_price) + stop_loss or ask_price
+                         <= float(position.entry_price) - take_profit):
+                    print(position.direction, price, position.entry_price)
+                    while not close_position(position):
+                        pass
+                    open_positions.remove(position)
+                    continue
+                elif position.direction == 'BUY' and \
+                        (bid_price <= float(position.entry_price) - stop_loss or bid_price
+                         >= float(position.entry_price) + take_profit):
+                    print(position.direction, price, position.entry_price)
+                    while not close_position(position):
+                        pass
+                    open_positions.remove(position)
+                    continue
 

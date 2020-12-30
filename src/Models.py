@@ -20,6 +20,21 @@ class BTX_BINANCE(Base):
         self.spread = spread
 
 
+class BTX_BINANCE_API(Base):
+    __tablename__ = 'PRICES_BINANCE_API'
+
+    id = Column(Integer, Sequence('btx_id_seq'), primary_key=True)
+    time = Column(Text)
+    bid = Column(Text)
+    ask = Column(Text)
+    spread = Column(Text)
+
+    def __init__(self, time=None, bid=None, ask=None, spread=None):
+        self.time = time
+        self.bid = bid
+        self.ask = ask
+        self.spread = spread
+
 class BTX(Base):
     __tablename__ = 'PRICES'
 
