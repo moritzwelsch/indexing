@@ -186,6 +186,7 @@ def close_position(pos):
         print("Closed position:", pos.close_time, pos.close_price)
         return True
 
+
 """
 now = datetime.datetime.now()
 pos = open_position('BUY', now)
