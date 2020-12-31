@@ -16,8 +16,9 @@ result = api.futures_account_balance()
 print(result)
 if result:
 	print(result[0]['asset'], result[0]['balance'])
+	now = datetime.datetime.now()
 
 	with open(html_file, 'w+') as f:
-		f.write("<h1>Asset: " + str(result[0]['asset']) + " Balance: " + str(result[0]['balance']) + "</h1>")
+		f.write("<h1>Asset: " + str(result[0]['asset']) + " Balance: " + str(result[0]['balance']) + "Aktualisiert: " + str(now) + "</h1>")
 
 sys.exit()
