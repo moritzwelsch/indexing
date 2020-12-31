@@ -27,7 +27,7 @@ else:
 
 # Trading parameters
 symbol = 'BTCUSDT'
-qty = 0.02
+qty = 0.002
 take_profit = 15
 stop_loss = 5
 max_spread = 0.5
@@ -178,13 +178,13 @@ def close_position(pos):
         print("Closed position:", pos.close_time, pos.close_price)
         return True
 
-
+"""
 now = datetime.datetime.now()
 pos = open_position('BUY', now)
 set_sl_tp(pos)
 close_position(pos)
 sys.exit()
-
+"""
 profit = 0
 open_positions = []
 df = build_dataframe()
