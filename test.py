@@ -29,11 +29,11 @@ else:
 # Trading parameters
 symbol = 'BTCUSDT'
 qty = 0.002
-take_profit = 30
+take_profit = 25
 stop_loss = 10
 max_spread = 0.5
 max_position_count = 1
-min_change = 0.05
+min_change = 0.1
 minutes = [5, 10, 15]
 max_minute = max(minutes)
 
