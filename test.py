@@ -34,7 +34,7 @@ stop_loss = 10
 max_spread = 0.5
 max_position_count = 1
 min_change = 0.01
-minutes = [5, 10, 15]
+minutes = [2, 5, 10, 15]
 max_minute = max(minutes)
 
 # Exchange parameters
