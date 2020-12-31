@@ -2,6 +2,7 @@ import sys
 import ccxt
 import json
 import time
+import binance
 import datetime
 import pandas as pd
 from binance.client import Client
@@ -119,13 +120,20 @@ def open_position(side, tick_id):
     else:
         print("ERROR - Side not valid.", side)
         return
-
-    result = api.futures_create_order(
-        symbol=symbol,
-        side=side,
-        type=Client.ORDER_TYPE_MARKET,
-        quantity=qty
-    )
+    try:
+        result = api.futures_create_order(
+            symbol=symbol,
+            side=side,
+            type=Client.ORDER_TYPE_MARKET,
+            quantity=qty
+        )
+    except binance.exceptions.BinanceAPIException:
+        result = api.futures_create_order(
+            symbol=symbol,
+            side=side,
+            type=Client.ORDER_TYPE_MARKET,
+            quantity=qty/10
+        )
     counter = 0
     while result['status'] != 'FILLED':
         result = get_position_status(result['orderId'])
@@ -237,7 +245,7 @@ while True:
                 if position.direction == 'SELL' and \
                         (ask_price >= float(position.entry_price) + stop_loss or ask_price
                          <= float(position.entry_price) - take_profit):
-                    print(position.direction, price, position.entry_price)
+                    print(position.direction, ask_price, position.entry_price)
                     while not close_position(position):
                         pass
                     open_positions.remove(position)
@@ -245,7 +253,7 @@ while True:
                 elif position.direction == 'BUY' and \
                         (bid_price <= float(position.entry_price) - stop_loss or bid_price
                          >= float(position.entry_price) + take_profit):
-                    print(position.direction, price, position.entry_price)
+                    print(position.direction, bid_price, position.entry_price)
                     while not close_position(position):
                         pass
                     open_positions.remove(position)
